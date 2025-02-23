@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Attendance System</title>
+    <style>
+        body {
+            background-color: #00B7FF; /* Protoss Pylon */
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 2rem; /* Scaled padding for responsiveness */
+            color: #0047AB; /* Naval */
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 90%;
+        }
+        a {
+            color: #00FF00; /* Download Progress */
+            text-decoration: none;
+            font-weight: bold;
+            padding: 1rem 2rem; /* Larger padding for mobile */
+            margin: 0.5rem;
+            display: inline-block;
+            font-size: 1.2rem; /* Larger text */
+        }
+        a:hover {
+            background-color: #FFC107; /* Rise-n-Shine */
+            color: #0047AB;
+            border-radius: 0.5rem;
+        }
+        .button {
+            background-color: #FFC107; /* Rise-n-Shine */
+            color: #0047AB;
+            padding: 1rem 2rem; /* Larger padding */
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            margin: 0.5rem;
+            display: inline-block;
+            text-decoration: none;
+            font-size: 1.2rem; /* Larger text */
+        }
+        .button:hover {
+            background-color: #9370DB; /* Matt Purple */
+        }
+        @media (max-width: 768px) {
+            body {
+                padding: 1.5rem;
+            }
+            .button, a {
+                padding: 0.8rem 1.5rem;
+                font-size: 1rem;
+                margin: 0.3rem;
+            }
+        }
+        @media (max-width: 480px) {
+            body {
+                padding: 1rem;
+            }
+            .button, a {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+                margin: 0.2rem;
+                display: block; /* Stack vertically */
+            }
+            h1 {
+                font-size: 1.5rem; /* Larger heading for mobile */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to Attendance System</h1>
+        <p>
+            <a href="/student/login" class="button">Student Login</a> | 
+            <a href="/student/register" class="button">Student Register</a>
+        </p>
+        <p>
+            <a href="/professor/login" class="button">Professor Login</a> | 
+            <a href="/professor/register" class="button">Professor Register</a>
+        </p>
+    </div>
+</body>
+</html>

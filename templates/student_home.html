@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Home</title>
+    <style>
+        body {
+            background-color: #00B7FF; /* Protoss Pylon */
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 2rem;
+            color: #0047AB; /* Naval */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .content {
+            max-width: 1200px;
+            width: 90%;
+        }
+        h1, h2 {
+            text-align: center;
+            font-size: 2rem;
+        }
+        ul {
+            background-color: #FFFFFF; /* Lynx White */
+            padding: 1.5rem;
+            border-radius: 1rem;
+            list-style-type: none;
+            width: 100%;
+            border: 0.1rem solid #808080; /* Chain Gang Grey */
+            box-shadow: 0 0 1rem rgba(0, 0, 0, 0.1);
+        }
+        li {
+            margin: 1rem 0;
+            padding: 1rem;
+            border-bottom: 0.1rem solid #808080; /* Chain Gang Grey */
+            font-size: 1.1rem;
+        }
+        form {
+            display: inline;
+        }
+        button {
+            background-color: #FFC107; /* Rise-n-Shine */
+            color: #0047AB;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        button:hover {
+            background-color: #9370DB; /* Matt Purple */
+        }
+        select, a {
+            background-color: #FFC107; /* Rise-n-Shine */
+            color: #0047AB;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            cursor: pointer;
+            margin-right: 0.5rem;
+            font-size: 1rem;
+        }
+        select:hover, a:hover {
+            background-color: #00FF00; /* Download Progress */
+        }
+        @media (max-width: 768px) {
+            body {
+                padding: 1.5rem;
+            }
+            .content {
+                width: 85%;
+            }
+            ul, form {
+                padding: 1.2rem;
+            }
+            button, select, a {
+                padding: 0.7rem 1.2rem;
+                font-size: 0.9rem;
+            }
+            h1, h2 {
+                font-size: 1.8rem;
+            }
+            li {
+                font-size: 1rem;
+            }
+        }
+        @media (max-width: 480px) {
+            body {
+                padding: 1rem;
+            }
+            .content {
+                width: 80%;
+            }
+            ul, form {
+                padding: 1rem;
+            }
+            button, select, a {
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
+                display: block; /* Stack vertically */
+                margin: 0.5rem 0;
+            }
+            h1, h2 {
+                font-size: 1.5rem;
+            }
+            li {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <h1>Student Dashboard</h1>
+        <h2>Your Courses</h2>
+        <ul>
+        {% for course in courses %}
+            <li>{{ course[1] }} - {{ course[2] }}
+                <form action="/student/unenroll" method="POST" style="display:inline;">
+                    <input type="hidden" name="course_id" value="{{ course[0] }}">
+                    <button type="submit">Unenroll</button>
+                </form>
+            </li>
+        {% endfor %}
+        </ul>
+        <h2>Enroll in a Course</h2>
+        <form action="/student/enroll" method="POST">
+            <select name="course_id">
+                {% for course in all_courses %}
+                    <option value="{{ course[0] }}">{{ course[1] }} - {{ course[2] }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit">Enroll</button>
+        </form>
+        <p><a href="/student/face_data">Update Face Data</a></p>
+    </div>
+</body>
+</html>

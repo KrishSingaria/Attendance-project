@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Professor Login</title>
+    <style>
+        body {
+            background-color: #00B7FF; /* Protoss Pylon */
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 2rem;
+            color: #0047AB; /* Naval */
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .form-container {
+            background-color: #FFFFFF; /* Lynx White */
+            padding: 2rem;
+            border-radius: 1rem;
+            max-width: 400px;
+            width: 90%;
+            margin: 0 auto;
+            border: 0.1rem solid #808080; /* Chain Gang Grey */
+            box-shadow: 0 0 1rem rgba(0, 0, 0, 0.1);
+        }
+        label, input {
+            display: block;
+            margin: 1rem 0;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 0.8rem;
+            border: 0.1rem solid #808080; /* Chain Gang Grey */
+            border-radius: 0.4rem;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+        button {
+            background-color: #FFC107; /* Rise-n-Shine */
+            color: #0047AB;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1.2rem;
+        }
+        button:hover {
+            background-color: #9370DB; /* Matt Purple */
+        }
+        #message {
+            color: #0047AB;
+            text-align: center;
+            font-size: 1rem;
+        }
+        @media (max-width: 768px) {
+            .form-container {
+                padding: 1.5rem;
+                width: 85%;
+            }
+            input[type="text"], input[type="password"], button {
+                padding: 0.7rem;
+                font-size: 0.9rem;
+            }
+            button {
+                font-size: 1rem;
+            }
+        }
+        @media (max-width: 480px) {
+            .form-container {
+                padding: 1rem;
+                width: 80%;
+            }
+            input[type="text"], input[type="password"], button {
+                padding: 0.5rem;
+                font-size: 0.8rem;
+            }
+            button {
+                font-size: 0.9rem;
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+            #message {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Professor Login</h1>
+        <form id="loginForm">
+            <label>Username:</label><input type="text" name="username" required><br>
+            <label>Password:</label><input type="password" name="password" required><br>
+            <button type="submit">Login</button>
+        </form>
+        <p id="message"></p>
+    </div>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const response = await fetch('/professor/login', { method: 'POST', body: formData });
+            const result = await response.json();
+            document.getElementById('message').innerText = result.message;
+            if (result.success) window.location.href = '/professor/home';
+        });
+    </script>
+</body>
+</html>

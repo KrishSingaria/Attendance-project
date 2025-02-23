@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Take Attendance</title>
+    <style>
+        body {
+            background-color: #00B7FF; /* Protoss Pylon */
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 2rem;
+            color: #0047AB; /* Naval */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .content {
+            max-width: 1200px;
+            width: 90%;
+        }
+        #videoContainer { position: relative; width: 100%; max-width: 1200px; height: auto; }
+        #video, #canvas { width: 100%; height: auto; max-width: none; }
+        #canvas { position: absolute; top: 0; left: 0; }
+        form {
+            background-color: #FFFFFF; /* Lynx White */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            border: 0.1rem solid #808080; /* Chain Gang Grey */
+            box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.1);
+        }
+        select {
+            padding: 0.8rem;
+            border: 0.1rem solid #808080; /* Chain Gang Grey */
+            border-radius: 0.4rem;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+        button {
+            background-color: #FFC107; /* Rise-n-Shine */
+            color: #0047AB;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        button:hover {
+            background-color: #9370DB; /* Matt Purple */
+        }
+        #message {
+            color: #0047AB;
+            margin-top: 1rem;
+            font-size: 1.1rem;
+        }
+        @media (max-width: 768px) {
+            .content, #videoContainer {
+                width: 85%;
+            }
+            form {
+                padding: 0.8rem;
+            }
+            select, button {
+                padding: 0.7rem 1.2rem;
+                font-size: 0.9rem;
+            }
+            #message {
+                font-size: 1rem;
+            }
+        }
+        @media (max-width: 480px) {
+            .content, #videoContainer {
+                width: 80%;
+            }
+            form {
+                padding: 0.6rem;
+            }
+            select, button {
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
+                display: block; /* Stack vertically */
+                margin: 0.5rem 0;
+            }
+            #message {
+                font-size: 0.8rem;
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <h1>Take Attendance</h1>
+        <form id="courseForm">
+            <select name="course_id">
+                {% for course in courses %}
+                    <option value="{{ course[0] }}">{{ course[1] }} - {{ course[2] }}</option>
+                {% endfor %}
+            </select>
+        </form>
+        <div id="videoContainer">
+            <video id="video" autoplay></video>
+            <canvas id="canvas"></canvas>
+        </div>
+        <p id="message"></p>
+        <button onclick="downloadCSV()">Download CSV</button>
+    </div>
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const courseId = document.querySelector('select[name="course_id"]');
+        const message = document.getElementById('message');
+
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                video.srcObject = stream;
+                processFrames();
+            })
+            .catch(err => message.innerText = "Error: " + err);
+
+        function processFrames() {
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const frame = canvas.toDataURL('image/jpeg');
+            fetch('/professor/take_attendance', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `course_id=${encodeURIComponent(courseId.value)}&frame=${encodeURIComponent(frame)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    drawBoundingBoxes(data.faces);
+                    message.innerText = `Detected: ${data.faces.map(f => f.name).join(', ')}`;
+                } else {
+                    message.innerText = data.message;
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+                setTimeout(processFrames, 500);
+            })
+            .catch(err => {
+                message.innerText = "Error: " + err;
+                setTimeout(processFrames, 500);
+            });
+        }
+
+        function drawBoundingBoxes(faces) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            faces.forEach(face => {
+                ctx.beginPath();
+                ctx.rect(face.left, face.top, face.right - face.left, face.bottom - face.top);
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = 'green';
+                ctx.stroke();
+                ctx.fillStyle = 'green';
+                ctx.font = '16px Arial';
+                ctx.fillText(face.name, face.left, face.top - 10);
+            });
+        }
+
+        function downloadCSV() {
+            const course = courseId.value;
+            window.location.href = `/professor/generate_csv?course_id=${encodeURIComponent(course)}`;
+        }
+    </script>
+</body>
+</html>

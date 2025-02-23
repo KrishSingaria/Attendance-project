@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Update Face Data</title>
+    <style>
+        body {
+            background-color: #00B7FF; /* Protoss Pylon */
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 2rem;
+            color: #0047AB; /* Naval */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .content {
+            max-width: 1200px;
+            width: 90%;
+        }
+        #videoContainer { position: relative; width: 100%; max-width: 1200px; height: auto; }
+        #video, #canvas { width: 100%; height: auto; max-width: none; }
+        #canvas { position: absolute; top: 0; left: 0; }
+        #message { margin-top: 1rem; color: #0047AB; font-size: 1.1rem; }
+        #startButton {
+            background-color: #FFC107; /* Rise-n-Shine */
+            color: #0047AB;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+        #startButton:hover {
+            background-color: #9370DB; /* Matt Purple */
+        }
+        @media (max-width: 768px) {
+            body {
+                padding: 1.5rem;
+            }
+            .content, #videoContainer {
+                width: 85%;
+            }
+            #startButton {
+                padding: 0.8rem 1.5rem;
+                font-size: 1rem;
+            }
+            #message {
+                font-size: 1rem;
+            }
+        }
+        @media (max-width: 480px) {
+            body {
+                padding: 1rem;
+            }
+            .content, #videoContainer {
+                width: 80%;
+            }
+            #startButton {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+            #message {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <h1>Update Face Data</h1>
+        <div id="videoContainer">
+            <video id="video" autoplay></video>
+            <canvas id="canvas"></canvas>
+        </div>
+        <p id="message">Press 'Start Capture' to begin face data reading.</p>
+        <button id="startButton">Start Capture</button>
+        <form id="faceForm" style="display:none;">
+            <input type="hidden" name="frame" id="frameData">
+        </form>
+    </div>
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const message = document.getElementById('message');
+        const startButton = document.getElementById('startButton');
+        const form = document.getElementById('faceForm');
+        let capturing = false;
+        let stableCount = 0;
+        const stabilityThreshold = 10; // ~1 second at 100ms intervals
+        const targetWidth = 1280;  // Downscaled resolution
+        const targetHeight = 720;
+
+        navigator.mediaDevices.getUserMedia({ 
+            video: { 
+                width: { ideal: 4096 }, 
+                height: { ideal: 2160 } 
+            } 
+        })
+            .then(stream => {
+                video.srcObject = stream;
+                video.onloadedmetadata = () => {
+                    video.play();
+                    const videoWidth = video.videoWidth;
+                    const videoHeight = video.videoHeight;
+                    canvas.width = targetWidth;
+                    canvas.height = targetHeight;
+                    document.getElementById('videoContainer').style.width = `${videoWidth}px`;
+                    document.getElementById('videoContainer').style.height = `${videoHeight}px`;
+                    message.innerText = `Camera resolution: ${videoWidth}x${videoHeight}. Downscaled to ${targetWidth}x${targetHeight}. Press 'Start Capture' to begin.`;
+                };
+            })
+            .catch(err => message.innerText = "Error accessing webcam: " + err.message);
+
+        startButton.addEventListener('click', () => {
+            if (!capturing) {
+                capturing = true;
+                startButton.disabled = true;
+                message.innerText = "Please center your face in the frame and hold still.";
+                detectFaces();
+            }
+        });
+
+        function detectFaces() {
+            if (!capturing) return;
+
+            ctx.drawImage(video, 0, 0, targetWidth, targetHeight);
+            const frame = canvas.toDataURL('image/jpeg', 0.95);
+            fetch('/detect_face', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `frame=${encodeURIComponent(frame)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                ctx.clearRect(0, 0, targetWidth, targetHeight);
+                if (data.success && data.box) {
+                    drawBoundingBox(data.box);
+                    if (isFaceCentered(data.box)) {
+                        stableCount++;
+                        if (stableCount >= stabilityThreshold) {
+                            message.innerText = "Capturing in 3...";
+                            setTimeout(() => {
+                                message.innerText = "Capturing in 2...";
+                                setTimeout(() => {
+                                    message.innerText = "Capturing in 1...";
+                                    setTimeout(() => captureFace(frame), 1000);
+                                }, 1000);
+                            }, 1000);
+                            return;
+                        } else {
+                            message.innerText = `Hold still (${stableCount}/${stabilityThreshold})`;
+                        }
+                    } else {
+                        stableCount = 0;
+                        message.innerText = "Please center your face in the frame.";
+                    }
+                } else {
+                    stableCount = 0;
+                    message.innerText = "No face detected. Please adjust your position.";
+                }
+                setTimeout(detectFaces, 100);
+            })
+            .catch(err => {
+                message.innerText = "Error: " + err;
+                setTimeout(detectFaces, 100);
+            });
+        }
+
+        function drawBoundingBox(box) {
+            ctx.beginPath();
+            ctx.rect(box.left, box.top, box.right - box.left, box.bottom - box.top);
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'green';
+            ctx.stroke();
+        }
+
+        function isFaceCentered(box) {
+            const faceWidth = box.right - box.left;
+            const faceHeight = box.bottom - box.top;
+            const centerX = (box.left + box.right) / 2;
+            const centerY = (box.top + box.bottom) / 2;
+            const frameCenterX = targetWidth / 2;
+            const frameCenterY = targetHeight / 2;
+
+            return Math.abs(centerX - frameCenterX) < targetWidth * 0.2 &&
+                   Math.abs(centerY - frameCenterY) < targetHeight * 0.2 &&
+                   faceWidth > targetWidth * 0.3;
+        }
+
+        function captureFace(frameData) {
+            document.getElementById('frameData').value = frameData;
+            const formData = new FormData(form);
+            fetch('/student/face_data', { method: 'POST', body: formData })
+                .then(response => response.json())
+                .then(result => {
+                    message.innerText = result.message;
+                    if (result.success) {
+                        capturing = false;
+                        startButton.disabled = false;
+                        setTimeout(() => window.location.reload(), 2000);
+                    } else {
+                        capturing = false;
+                        startButton.disabled = false;
+                        setTimeout(detectFaces, 2000);
+                    }
+                })
+                .catch(err => {
+                    message.innerText = "Error: " + err;
+                    capturing = false;
+                    startButton.disabled = false;
+                    setTimeout(detectFaces, 2000);
+                });
+        }
+    </script>
+</body>
+</html>

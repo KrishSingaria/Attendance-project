@@ -1,0 +1,117 @@
+# Python files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/  # Virtual environment directory (if using a local venv)
+venv/  # Alternative virtual environment directory
+*.log
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff
+instance/
+.webassets-cache
+
+# SQLite databases (if using locally, but not for deployment)
+*.sqlite
+*.sqlite3
+*.db
+
+# PostgreSQL dump files (if used for backup)
+*.backup
+*.dump
+
+# InsightFace models and caches (stored locally, not in version control)
+~/.insightface/
+insightface/models/
+insightface/cache/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swo
+*.swp
+*~
+*.pyc
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+secrets.py
+config.py  # If you store sensitive data here
+
+# Build and deployment artifacts
+__pycache__/
+*.log
+*.pid
+*.sock
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
