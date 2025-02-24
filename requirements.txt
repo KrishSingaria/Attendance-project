@@ -16,6 +16,7 @@ executing==2.1.0
 fasteners==0.19
 Flask==2.3.2
 insightface==0.7.3
+psycopg2-binary==2.9.9
 filelock==3.16.1
 flatbuffers==24.3.25
 fonttools==4.53.1

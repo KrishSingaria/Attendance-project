@@ -1,5 +1,5 @@
 [phases.setup]
-nixPkgs = ['gcc', 'mesa', 'postgresql_16', 'python310']
+nixPkgs = ['gcc', 'mesa', 'postgresql_16.lib', 'python310']
 
 [phases.install]
 cmds = ['python -m venv --copies /opt/venv', '. /opt/venv/bin/activate', 'pip install -r requirements.txt']
