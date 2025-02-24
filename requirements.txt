@@ -53,6 +53,7 @@ namex==0.0.8
 nest-asyncio==1.6.0
 networkx==3.4.2
 numcodecs
+bcrypt
 numpy
 onnxruntime
 opencv-python-headless
