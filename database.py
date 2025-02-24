@@ -5,9 +5,9 @@ import os
 
 def init_db():
     conn = psycopg2.connect(
-        host=os.environ.get("POSTGRES_HOST"),
-        port=os.environ.get("POSTGRES_PORT"),
-        user=os.environ.get("POSTGRES_USER"),
+        host=os.environ.get("PGHOST"),
+        port=os.environ.get("PGPORT"),
+        user=os.environ.get("PGUSER"),
         password=os.environ.get("POSTGRES_PASSWORD"),
         dbname=os.environ.get("POSTGRES_DB")
     )
