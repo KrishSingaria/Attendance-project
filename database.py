@@ -1,14 +1,15 @@
 import sqlite3
 import pickle
 import psycopg2
+import os
 
 def init_db():
     conn = psycopg2.connect(
-        host="railway_postgres_host",
-        port="railway_postgres_port",
-        user="railway_postgres_user",
-        password="railway_postgres_password",
-        dbname="railway_postgres_db"
+        host=os.environ.get("POSTGRES_HOST"),
+        port=os.environ.get("POSTGRES_PORT"),
+        user=os.environ.get("POSTGRES_USER"),
+        password=os.environ.get("POSTGRES_PASSWORD"),
+        dbname=os.environ.get("POSTGRES_DB")
     )
     # conn = sqlite3.connect('attendance.db')
     c = conn.cursor()
