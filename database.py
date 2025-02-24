@@ -1,8 +1,16 @@
 import sqlite3
 import pickle
+import psycopg2
 
 def init_db():
-    conn = sqlite3.connect('attendance.db')
+    conn = psycopg2.connect(
+        host="railway_postgres_host",
+        port="railway_postgres_port",
+        user="railway_postgres_user",
+        password="railway_postgres_password",
+        dbname="railway_postgres_db"
+    )
+    # conn = sqlite3.connect('attendance.db')
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS professors 
                  (id INTEGER PRIMARY KEY, username TEXT UNIQUE, email TEXT UNIQUE, password TEXT)''')
