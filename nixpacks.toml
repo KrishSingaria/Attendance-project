@@ -1,0 +1,8 @@
+[phases.setup]
+nixPkgs = ['gcc', 'libgl1-mesa-glx', 'postgresql_16', 'python310']
+
+[phases.install]
+cmds = ['pip install -r requirements.txt']
+
+[phases.start]
+cmd = 'gunicorn app:app'
