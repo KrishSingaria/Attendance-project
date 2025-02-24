@@ -66,7 +66,6 @@ platformdirs==4.2.2
 prompt_toolkit==3.0.47
 protobuf==5.28.3
 psutil==6.0.0
-psycopg2==2.9.10
 pure_eval==0.2.3
 Pygments==2.18.0
 pyparsing==3.1.4
