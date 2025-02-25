@@ -2,14 +2,9 @@ import sqlite3
 import pickle
 import psycopg2
 import os
-
 def init_db():
     conn = psycopg2.connect(
-        host=os.environ.get("PGHOST"),
-        port=os.environ.get("PGPORT"),
-        user=os.environ.get("PGUSER"),
-        password=os.environ.get("POSTGRES_PASSWORD"),
-        dbname=os.environ.get("POSTGRES_DB")
+        dsn=os.environ.get("DATABASE_URL")
     )
     # conn = sqlite3.connect('attendance.db')
     c = conn.cursor()
