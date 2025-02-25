@@ -29,7 +29,7 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 # Initialize InsightFace with ArcFace model
-face_app = FaceAnalysis(name='buffalo_l', det_size=(1280, 720))  # Match downscaled resolution
+face_app = FaceAnalysis(name='buffalo_l', det_size=(640, 480))  # Match downscaled resolution
 face_app.prepare(ctx_id=0 if torch.cuda.is_available() else -1)  # ctx_id=0 for GPU, -1 for CPU on Windows
 
 init_db()
