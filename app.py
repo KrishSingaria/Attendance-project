@@ -1,7 +1,6 @@
 from flask import Flask, request, render_template, jsonify, session, send_file, redirect, url_for
 import bcrypt
 import sqlite3
-import torch
 import os
 import numpy as np
 import base64
@@ -30,7 +29,7 @@ logger = logging.getLogger(__name__)
 
 # Initialize InsightFace with ArcFace model
 face_app = FaceAnalysis(name='buffalo_l', det_size=(640, 480))  # Match downscaled resolution
-face_app.prepare(ctx_id=0 if torch.cuda.is_available() else -1)  # ctx_id=0 for GPU, -1 for CPU on Windows
+face_app.prepare(ctx_id=-1)  # if torch.cuda.is_available() else -1 ctx_id=0 for GPU, -1 for CPU on Windows
 
 init_db()
 
